@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Vendas</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+      integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
+      integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://kit.fontawesome.com/9a2910c15b.js"
+      crossorigin="anonymous"
+    ></script>
+    <link rel="stylesheet" href="/css/global.css" />
+    <script src="/dash/script.js"></script>
+  </head>
+  <body id="body">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">Logo</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNavDropdown"
+          aria-controls="navbarNavDropdown"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="#">Inicio</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#" onclick="criaCompra()">Cadastrar</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Produtos</a>
+            </li>
+            <!--<li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Dropdown link
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                <li><a class="dropdown-item" href="#">Action</a></li>
+                <li><a class="dropdown-item" href="#">Another action</a></li>
+                <li><a class="dropdown-item" href="#">Something else here</a></li>
+              </ul>
+            </li>-->
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12 d-flex">
+          <div class="col-md-12 d-flex justify-content-end align-items-center">
+            <div id="nome" style="margin-right: 10px"></div>
+            <div id="email"></div>
+            <button class="btn" onclick="sair()">Sair</button>
+          </div>
+        </div>
+        <div class="col-md-12 d-flex justify-content-center">
+          <div class="col-md-3 card">
+            <h3>Valor do dia</h3>
+            <div id="compraDia"></div>
+          </div>
+          <div class="col-md-3 card">
+            <h3>Projeção</h3>
+            <div id="projecao"></div>
+          </div>
+          <div class="col-md-3 card">
+            <h3>Valor do mês</h3>
+            <div id="compraMes"></div>
+          </div>
+        </div>
+        <div>
+          <table class="table">
+            <h3>Compras</h3>
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Produto</th>
+                <th scope="col">Valor</th>
+                <th scope="col">Status</th>
+                <th scope="col">Data</th>
+                <th scope="col">Edit</th>
+              </tr>
+            </thead>
+            <tbody id="compras"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
+
+
+<script>
+  ola();
+  window.onload = function () {
+    // Fazer uma solicitação para obter os dados necessários após o carregamento da página
+    let token = localStorage.getItem("token");
+    let email = localStorage.getItem("email");
+    let userId = localStorage.getItem("userId");
+    //console.log(userId,email,token)
+    fetch("/user/dados", {
+      method: "GET",
+      headers: {
+        Authorization: `${token}`,
+        email: email,
+        userId: userId,
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.token !== "null" && data.mensagem !== "Token inválido") {
+          console.log("data", data.mensagem);
+          update(data);
+        } else {
+          console.log("ovov", data.mensagem);
+          document.getElementById(
+            "body"
+          ).innerHTML = `<div class="erro" id="erro" > Erro ao autenticar usuário</div>`;
+          document.getElementById("erro").style.backgroundColor =
+            "black !important";
+          document.getElementById("erro").style.height = "100vh";
+          document.getElementById("erro").style.color = "white";
+          document.getElementById("erro").style.display = "block";
+          console.log("meme", "meme");
+          throw new Error("Erro ao autenticar usuário");
+        }
+      });
+  };
+  function sair() {
+    localStorage.clear();
+    window.location.href = "/";
+  }
+  function update(data) {
+    console.log(data);
+    document.getElementById("nome").textContent = `Olá ${data.name}!!`;
+    //document.getElementById("email").innerHTML = `Seu e-mail é: ${data.email}`;
+    //return data.json();
+    let compras = data.compras;
+    console.log("compras", compras);
+    let valorTotal = 0;
+    //let compra = 0
+    for (let i = 0; i < compras.length; i++) {
+      let compra = compras[i];
+
+      const dataCompra = new Date(compra.data);
+      const options = { year: "numeric", month: "2-digit", day: "2-digit" };
+      const dataFormatada = dataCompra.toLocaleDateString("pt-BR", options);
+
+      document.getElementById("compras").innerHTML += `
+               <tr>
+                <th scope="row">${i + 1}</th>
+                <td>${compras[i].nome}</td>
+                <td>${compras[i].valor}</td>
+                <td>${compras[i].status}</td>
+                <td>${dataFormatada}</td>
+                <td class="botao" id="${compras[i]._id}" onclick="cardEditproduct()"><i class="fa-solid fa-pen-to-square"></i></td>
+              </tr>
+        `;
+      valorTotal += compra.valor;
+    }
+
+    document.getElementById("compraMes").textContent = `${valorTotal}`;
+    document.getElementById("compraDia").textContent = `${valorTotal}`;
+  }
+</script>

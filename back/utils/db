@@ -1,0 +1,29 @@
+const mongoose = require("mongoose");
+
+//LOGIN = "adm"
+//SENHA = "OiCVAHBkbQ3w5H6Q"
+//const login = "adm";
+//const senha = "OiCVAHBkbQ3w5H6Q";
+const login = process.env.LOGIN
+const senha = process.env.SENHA
+
+// Construir a string de conexão
+const URI = `mongodb+srv://${login}:${senha}@cluster0.dljtveo.mongodb.net/?retryWrites=true&w=majority`;
+
+// Configurar a conexão com o MongoDB
+const databaseConnection = async () => {
+  try {
+    if (!global.mongoose) {
+      mongoose.set("strictQuery", false);
+      global.mongoose = await mongoose.connect(URI, { useNewUrlParser: true, useUnifiedTopology: true });
+      console.log('Conexão bem-sucedida com o MongoDB');
+    }
+  } catch (error) {
+    console.error('Erro na conexão com o MongoDB:', error.message);
+    // Lógica de tratamento de erro, como registrar o erro, enviar notificações, etc.
+    // Você pode decidir encerrar o processo ou tomar outras medidas, dependendo do caso.
+    process.exit(1);
+  }
+};
+
+module.exports = databaseConnection;

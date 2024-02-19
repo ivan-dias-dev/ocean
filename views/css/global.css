@@ -1,0 +1,50 @@
+.pai {
+  background-color: rgb(231, 231, 231);
+  height: 80%;
+  height: 100%;
+}
+.avo {
+  height: 30em;
+}
+.card {
+  background-color: rgb(238, 238, 238);
+  color: rgb(5, 5, 5);
+  max-height: 100%;
+  border-radius: 10px;
+  padding: 10px;
+  margin: 20px;
+}
+
+body {
+  background-color: rgb(181, 206, 216);
+}
+.rowPrincipal {
+  height: 100%;
+}
+.erro {
+  background-color: black !important;
+  color: aliceblue;
+  height: 30em;
+  width: 100%;
+  display: none;
+}
+.botao {
+  cursor: pointer;
+  text-transform: none;
+}
+.table {
+  padding: 0rem !important;
+}
+
+/*888888888888888888888888888888888888888888888888888888888888*/
+
+.cardEdit {
+  background-color: #dfecf5;
+  width: 30em;
+  height: 35em;
+  border-radius: 10px;
+}
+
+.rowCard {
+  height: 100vh;
+}

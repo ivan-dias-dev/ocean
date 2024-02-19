@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>login</title>
+   
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+      integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
+      integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row justify-content-center align-content-center avo">
+        <div class="col-md-6 pai">
+          <div
+            class="row d-flex justify-content-center align-content-center rowPrincipal"
+          >
+            <form id="myForm">
+              <h1>Logar</h1>
+              <div class="form-group">
+                <label for="exampleInputEmail1">Login</label>
+                <input
+                  type="email"
+                  class="form-control"
+                  id="exampleInputEmail1"
+                  aria-describedby="emailHelp"
+                  placeholder="Login"
+                />
+              </div>
+              <div class="form-group">
+                <label for="exampleInputPassword1">Senha</label>
+                <input
+                  type="password"
+                  class="form-control"
+                  id="exampleInputPassword1"
+                  placeholder="Senha"
+                  required
+                />
+              </div>
+              <div class="form-check">
+                <input
+                  type="checkbox"
+                  class="form-check-input"
+                  id="exampleCheck1"
+                  required
+                />
+                <label class="form-check-label" for="exampleCheck1"
+                  >Lembrar de mim</label
+                >
+              </div>
+              <div
+                type="submit"
+                onclick="enviarFormulario()"
+                class="btn btn-primary"
+                return
+                false
+              >
+                Enviar
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
+<style>
+  .pai {
+    background-color: rgb(231, 231, 231);
+    height: 80%;
+  }
+  .avo {
+    height: 30em;
+  }
+  .filho {
+    background-color: rgb(218, 81, 81);
+    color: aliceblue;
+  }
+  body {
+    background-color: rgb(245, 245, 245);
+  }
+  .rowPrincipal {
+    height: 100%;
+  }
+</style>
+
+<script>
+  function enviarFormulario() {
+    const form = document.getElementById("myForm");
+
+    let email = document.getElementById("exampleInputEmail1").value;
+    let senha = document.getElementById("exampleInputPassword1").value;
+
+    fetch("/user/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: email,
+        senha: senha,
+      }),
+    })
+      .then((response) => response.json()) // Converta a resposta para JSON
+      .then((data) => {
+        if (data.message == "Usuário autenticado com sucesso") {
+          // Armazene o token e redirecione para a página de vendas
+          let token = data.token;
+          let userId = data.userId;
+          let email = data.email;
+          localStorage.setItem("token", token);
+          localStorage.setItem("userId", userId);
+          localStorage.setItem("email", email);
+          console.log("Token armazenado com sucesso", data);
+          //
+          fetch("/user/vendas2", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `${token}`,
+            },
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.message == "Autenticado") {
+                console.log("Resposta da API:", data);
+                // Se a resposta do servidor for bem-sucedida, redirecione o usuário
+                console.log("ok");
+                window.location.href = "/user/vendas2";
+              } else {
+                // Se a resposta não for bem-sucedida, lance um erro
+                throw new Error("Erro ao acessar dados protegidos");
+              }
+            })
+            .catch((error) => {
+              console.error("Erro ao acessar dados protegidos:", error);
+            });
+        }
+      })
+      .catch((error) => console.error("Erro ao enviar formulário:", error));
+  }
+</script>
